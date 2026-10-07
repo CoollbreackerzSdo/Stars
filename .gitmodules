@@ -1,0 +1,9 @@
+[submodule "Stars.Server"]
+	path = Stars.Server
+	url = .\\Stars.Server\\.git\\
+[submodule "Stars.Client"]
+	path = Stars.Client
+	url = .\\Stars.Client\\.git\\
+[submodule "Stars.Shared"]
+	path = Stars.Shared
+	url = .\\Stars.Shared\\.git\\

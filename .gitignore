@@ -8,9 +8,6 @@
 .github
 doc
 docs-site
-Stars.Shared
-Stars.Client
-Stars.Server
 # User-specific files
 *.rsuser
 *.suo
