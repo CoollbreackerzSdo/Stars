@@ -1,0 +1,10 @@
+{
+  "extends": "assemblyscript/std/assembly",
+  "compilerOptions": {
+    "target": "es2020",
+    "strict": true,
+    "noImplicitAny": true,
+    "noEmit": true
+  },
+  "include": ["index.ts"]
+}

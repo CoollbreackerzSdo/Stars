@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "wasm": "deno run -A npm:assemblyscript@0.28.2/bin/asc.js assembly/index.ts --outFile dist/core.wasm --runtime stub --optimizeLevel 3 --shrinkLevel 1 --noAssert",
+    "build": "deno run -A build.ts",
+    "serve": "deno run -A server.ts",
+    "dev": "deno run -A build.ts && deno run -A server.ts",
+    "test:wasm": "deno run -A test-wasm.ts"
+  },
+  "fmt": {
+    "exclude": ["dist"]
+  },
+  "lint": {
+    "exclude": ["dist"]
+  }
+}
