@@ -1,2 +1,5 @@
 <Solution>
+  <Project Path="Stars.Client/Stars.Client.csproj" />
+  <Project Path="Stars.Server/Stars.Server.csproj" />
+  <Project Path="Stars.Shared/Stars.Shared.csproj" />
 </Solution>
