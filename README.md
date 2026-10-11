@@ -2,6 +2,8 @@
 
 [![Versión](https://img.shields.io/badge/versi%C3%B3n-1.0.0-7c5cff)](#)
 [![GitHub](https://img.shields.io/badge/GitHub-CoolbreackerzSdo-181717?logo=github&logoColor=white)](https://github.com/CoollbreackerzSdo)
+
+
 [Documentación Web](https://coollbreackerzsdo.github.io/Stars/)
  
 Stars es un sistema de **streaming de audio del sistema en tiempo real**. El servidor captura
