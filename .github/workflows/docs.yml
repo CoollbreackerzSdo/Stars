@@ -28,6 +28,14 @@ jobs:
         working-directory: docs-site
     steps:
       - uses: actions/checkout@v4
+      # The repo's Pages source is currently "Deploy from a branch", so every push also
+      # triggers the built-in "pages build and deployment" (Jekyll) that overwrites this
+      # SPA. Force the source to "GitHub Actions" so only this workflow publishes.
+      - name: Configure Pages (source = GitHub Actions)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+        continue-on-error: true
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x

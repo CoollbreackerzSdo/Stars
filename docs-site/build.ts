@@ -40,6 +40,16 @@ const pages = [
 
 const read = (path: string) => Deno.readTextFile(new URL(path, import.meta.url));
 
+/**
+ * Converts a file URL to a path the external tooling (asc) understands on every OS.
+ * On Windows `pathname` looks like `/C:/dir/file` and the leading slash must go;
+ * on Linux/macOS the path is already absolute and must stay untouched.
+ */
+function toNativePath(url: URL): string {
+  const path = decodeURIComponent(url.pathname);
+  return /^\/[A-Za-z]:/.test(path) ? path.slice(1) : path;
+}
+
 function slugify(text: string): string {
   return text
     .normalize("NFD")
@@ -132,7 +142,7 @@ async function compileWasm(outFile: URL) {
       ASSEMBLYSCRIPT,
       "assembly/index.ts",
       "--outFile",
-      outFile.pathname.replace(/^\//, ""),
+      toNativePath(outFile),
       "--runtime",
       "stub",
       "--optimizeLevel",
