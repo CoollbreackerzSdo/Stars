@@ -1,30 +1,31 @@
 # Stars · documentación (SPA + WASM)
 
-Documentación como **aplicación de una sola página (SPA)** construida con **Deno** y un
+Documentación como **aplicación de una sola página (SPA)** construida con **Bun** y un
 **núcleo WebAssembly en AssemblyScript** para la búsqueda. No hay servidor de aplicación: el
 build produce archivos estáticos y el enrutado es en el cliente (hash routing).
 
 ## Requisitos
 
-- [Deno](https://deno.com/) 2.x.
+- [Bun](https://bun.sh/) 1.x.
 
 ## Comandos
 
 ```bash
-deno task build       # compila el WASM + renderiza el Markdown + emite dist/
-deno task serve       # sirve dist/ en http://localhost:8000
-deno task dev         # build + serve
-deno task wasm        # compila solo el núcleo AssemblyScript → dist/core.wasm
-deno task test:wasm   # prueba de humo del núcleo WASM
+bun install            # instala marked + assemblyscript (genera bun.lock)
+bun run build          # compila el WASM + renderiza el Markdown + emite dist/
+bun run serve          # sirve dist/ en http://localhost:8000
+bun run dev            # build + serve
+bun run wasm           # compila solo el núcleo AssemblyScript → dist/core.wasm
+bun run test:wasm      # prueba de humo del núcleo WASM
 ```
 
-Puerto configurable: `PORT=9000 deno task serve`.
+Puerto configurable: `PORT=9000 bun run serve`.
 
 ## Cómo funciona
 
 - **`assembly/index.ts`** — núcleo en **AssemblyScript** compilado a `core.wasm`. Tokeniza y
   puntúa texto en memoria lineal (`score`, `occurrences`, `wordCount`). Sin binarios nativos: el
-  compilador `asc` se ejecuta a través de Deno (`npm:assemblyscript`).
+  compilador `asc` se ejecuta a través de Bun (`node_modules/assemblyscript/bin/asc.js`).
 - **`build.ts`** — sin servidor. Lee `README.md` y `doc/*.md`, los convierte con [marked], añade
   anclas, reescribe enlaces a rutas `#/…`, envuelve bloques de código y emite:
   - `dist/index.html` — shell de la SPA
@@ -42,11 +43,11 @@ Puerto configurable: `PORT=9000 deno task serve`.
 Enrutado por hash: funciona desde `file://` y en GitHub Pages con subruta, sin configuración.
 
 La **fuente de verdad es el Markdown**: edita `README.md` / `doc/*.md` y vuelve a ejecutar
-`deno task build`.
+`bun run build`.
 
 ## Despliegue en GitHub Pages
 
-El workflow [`.github/workflows/docs.yml`](../.github/workflows/docs.yml) compila el sitio con Deno
+El workflow [`.github/workflows/docs.yml`](../.github/workflows/docs.yml) compila el sitio con Bun
 (AssemblyScript incluido) y lo publica en GitHub Pages en cada push cuando cambian `doc/`,
 `docs-site/` o el README.
 
@@ -72,7 +73,8 @@ docs-site/
 ├── build.ts            # generador estático
 ├── server.ts           # servidor de previsualización
 ├── test-wasm.ts        # smoke test del WASM
-├── deno.json           # tareas
+├── package.json        # tareas + dependencias
+├── bun.lock            # lockfile (generado por `bun install`)
 └── dist/               # salida generada (no versionar)
 ```
 

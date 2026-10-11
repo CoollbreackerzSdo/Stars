@@ -39,10 +39,11 @@ posibles: **Wi-Fi (TCP)**, **USB (adb reverse)** y **Bluetooth Classic (RFCOMM/S
 | [10. Hoja de ruta](doc/10-roadmap.md) | **Próximo foco: calidad de audio** y pendientes futuros. |
 
 > 💡 También hay una **versión web** de esta documentación como **SPA + WASM**
-> (Deno + AssemblyScript) en [`docs-site/`](docs-site/README.md):
+> (Bun + AssemblyScript) en [`docs-site/`](docs-site/README.md):
 > ```bash
 > cd docs-site
-> deno task dev      # genera y sirve en http://localhost:8000
+> bun install
+> bun run dev     # genera y sirve en http://localhost:8000
 > ```
 >
 > 🌐 Se publica automáticamente en **GitHub Pages** con el workflow

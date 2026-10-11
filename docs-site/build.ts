@@ -1,12 +1,23 @@
 // Build for the Stars docs single-page application.
 //
-//   deno task build   # compile WASM core + render Markdown + emit dist/
-//   deno task serve   # preview dist/ on http://localhost:8000
+//   bun run build   # compile WASM core + render Markdown + emit dist/
+//   bun run serve   # preview dist/ on http://localhost:8000
 //
 // The output is a static SPA: one index.html with client-side hash routing and an
 // AssemblyScript (WASM) core used by the search box.
 
-import { marked } from "npm:marked@15";
+import { marked } from "marked";
+import {
+  copyFileSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { spawnSync } from "node:child_process";
 
 interface Heading {
   id: string;
@@ -22,8 +33,6 @@ interface DocPage {
   headings: Heading[];
 }
 
-const ASSEMBLYSCRIPT = "npm:assemblyscript@0.28.2/bin/asc.js";
-
 const pages = [
   { file: "../README.md", slug: "index", label: "Inicio" },
   { file: "../doc/01-overview.md", slug: "overview", label: "1. Visión general" },
@@ -38,17 +47,7 @@ const pages = [
   { file: "../doc/10-roadmap.md", slug: "roadmap", label: "10. Hoja de ruta" },
 ];
 
-const read = (path: string) => Deno.readTextFile(new URL(path, import.meta.url));
-
-/**
- * Converts a file URL to a path the external tooling (asc) understands on every OS.
- * On Windows `pathname` looks like `/C:/dir/file` and the leading slash must go;
- * on Linux/macOS the path is already absolute and must stay untouched.
- */
-function toNativePath(url: URL): string {
-  const path = decodeURIComponent(url.pathname);
-  return /^\/[A-Za-z]:/.test(path) ? path.slice(1) : path;
-}
+const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
 function slugify(text: string): string {
   return text
@@ -121,28 +120,37 @@ function extractTitle(html: string, fallback: string): string {
   return match ? stripTags(match[1]) : fallback;
 }
 
-async function copyDir(from: URL, to: URL) {
-  await Deno.mkdir(to, { recursive: true });
-  for await (const entry of Deno.readDir(from)) {
-    const src = new URL(entry.name + (entry.isDirectory ? "/" : ""), from);
-    const dest = new URL(entry.name + (entry.isDirectory ? "/" : ""), to);
-    if (entry.isDirectory) {
-      await copyDir(src, dest);
+function copyDir(from: URL, to: URL) {
+  mkdirSync(to, { recursive: true });
+  for (const entry of readdirSync(from, { withFileTypes: true })) {
+    const src = new URL(entry.name + (entry.isDirectory() ? "/" : ""), from);
+    const dest = new URL(entry.name + (entry.isDirectory() ? "/" : ""), to);
+    if (entry.isDirectory()) {
+      copyDir(src, dest);
     } else {
-      await Deno.copyFile(src, dest);
+      copyFileSync(src, dest);
     }
   }
 }
 
-async function compileWasm(outFile: URL) {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "-A",
-      ASSEMBLYSCRIPT,
+function compileWasm(outFile: URL) {
+  // asc sits in node_modules/assemblyscript/bin/asc.js; run it with the current runtime
+  // (bun). fileURLToPath yields a native absolute path on every OS (Windows drive letters
+  // included), which is what asc expects as --outFile.
+  const asc = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "node_modules",
+    "assemblyscript",
+    "bin",
+    "asc.js",
+  );
+  const result = spawnSync(
+    process.execPath,
+    [
+      asc,
       "assembly/index.ts",
       "--outFile",
-      toNativePath(outFile),
+      fileURLToPath(outFile),
       "--runtime",
       "stub",
       "--optimizeLevel",
@@ -151,24 +159,22 @@ async function compileWasm(outFile: URL) {
       "1",
       "--noAssert",
     ],
-    stdout: "piped",
-    stderr: "piped",
-  });
-  const { code, stderr } = await command.output();
-  if (code !== 0) {
-    throw new Error(`AssemblyScript build failed:\n${new TextDecoder().decode(stderr)}`);
+    { encoding: "utf8" },
+  );
+  if (result.status !== 0) {
+    throw new Error(`AssemblyScript build failed:\n${result.stderr || result.stdout}`);
   }
 }
 
 async function build() {
   const dist = new URL("./dist/", import.meta.url);
-  await Deno.remove(dist, { recursive: true }).catch(() => {});
-  await Deno.mkdir(dist, { recursive: true });
+  rmSync(dist, { recursive: true, force: true });
+  mkdirSync(dist, { recursive: true });
 
   const docs: DocPage[] = [];
 
   for (const page of pages) {
-    const markdown = await read(page.file);
+    const markdown = read(page.file);
     const rawHtml = await marked.parse(markdown, { gfm: true });
     const linked = wrapCodeBlocks(rewriteLinks(rawHtml));
     const { html, headings } = addHeadingIds(linked, page.slug);
@@ -184,14 +190,14 @@ async function build() {
     });
   }
 
-  await Deno.mkdir(new URL("./data/", dist), { recursive: true });
-  await Deno.writeTextFile(
+  mkdirSync(new URL("./data/", dist), { recursive: true });
+  writeFileSync(
     new URL("./data/index.json", dist),
     JSON.stringify({ pages: docs }),
   );
 
-  await copyDir(new URL("./assets/", import.meta.url), dist);
-  await compileWasm(new URL("./core.wasm", dist));
+  copyDir(new URL("./assets/", import.meta.url), dist);
+  compileWasm(new URL("./core.wasm", dist));
 
   console.log(`✓ Built SPA — ${docs.length} pages + core.wasm`);
 }

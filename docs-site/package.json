@@ -1,0 +1,18 @@
+{
+  "name": "stars-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "wasm": "asc assembly/index.ts --outFile dist/core.wasm --runtime stub --optimizeLevel 3 --shrinkLevel 1 --noAssert",
+    "build": "bun ./build.ts",
+    "serve": "bun ./server.ts",
+    "dev": "bun ./build.ts && bun ./server.ts",
+    "test:wasm": "bun ./test-wasm.ts"
+  },
+  "dependencies": {
+    "marked": "^15.0.0"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.28.2"
+  }
+}
