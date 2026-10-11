@@ -86,10 +86,10 @@ Stars/
 │   ├── CircularByteBuffer.cs  #   buffer PCM en tiempo real
 │   ├── DuplexStream.cs        #   une streams de entrada/salida
 │   ├── NetworkHelper.cs       #   IPs locales / nombre de equipo
-│   └── AnimationExtensions.cs #   helpers de animación de UI
+│   └── AudioProcessor.cs      #   mezcla de canales y ecualizador (bandas RBJ)
 ├── Stars.Server/              # App MAUI: captura y emite audio
 │   ├── Features/              # Vertical slices: Capture, Streaming, Discovery, Platforms, Connectivity
-│   ├── Components/            # Controles XAML reutilizables (tema "Aurora")
+│   ├── Components/            # Controles XAML reutilizables (tema "Signal")
 │   ├── AppServices.cs         # Composition root
 │   ├── MainViewModel.cs       # MVVM
 │   └── MainPage.xaml          # UI
