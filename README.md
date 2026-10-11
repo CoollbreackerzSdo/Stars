@@ -102,3 +102,5 @@ Stars/
     ├── MainViewModel.cs
     └── MainPage.xaml
 ```
+
+> 0.1.2
