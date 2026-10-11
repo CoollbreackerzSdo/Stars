@@ -28,14 +28,23 @@ jobs:
         working-directory: docs-site
     steps:
       - uses: actions/checkout@v4
-      # The repo's Pages source is currently "Deploy from a branch", so every push also
-      # triggers the built-in "pages build and deployment" (Jekyll) that overwrites this
-      # SPA. Force the source to "GitHub Actions" so only this workflow publishes.
-      - name: Configure Pages (source = GitHub Actions)
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
+      # The repo's Pages source is "Deploy from a branch", so every push also triggers the
+      # built-in Jekyll "pages build and deployment" job that overwrites this SPA. Switch
+      # the source to "GitHub Actions" so only this workflow publishes. If the token cannot
+      # manage Pages settings, flip it once manually: Settings > Pages > Source >
+      # "GitHub Actions" (continue-on-error keeps the pipeline from breaking).
+      - name: Switch Pages source to GitHub Actions
         continue-on-error: true
+        shell: bash
+        run: |
+          curl -sS -o /dev/null -w "pages_api_http=%{http_code}\n" \
+            -X PUT \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -H "Content-Type: application/json" \
+            -d '{"build_type":"workflow"}' \
+            "https://api.github.com/repos/${{ github.repository }}/pages"
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
