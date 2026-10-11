@@ -8,10 +8,10 @@ toda la salida de audio de un PC (Windows, vía WASAPI loopback), la comprime co
 envía a un dispositivo cliente (Android) que la reproduce **en vivo**, con tres transportes
 posibles: **Wi-Fi (TCP)**, **USB (adb reverse)** y **Bluetooth Classic (RFCOMM/SPP)**.
 
-> **Versión 1.0.0**
+> **Versión 0.1.2**
 >
 > 🎯 **Próximo foco principal: mejorar la calidad del audio en todos los conectores.**
-> Tras la 1.0.0, el objetivo central es elevar la calidad de audio de forma **uniforme en Wi-Fi,
+> Tras la 0.1.2, el objetivo central es elevar la calidad de audio de forma **uniforme en Wi-Fi,
 > USB y Bluetooth**. Ver [10. Hoja de ruta](doc/10-roadmap.md).
 
 ```
