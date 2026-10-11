@@ -104,3 +104,5 @@ Stars/
     ├── MainViewModel.cs
     └── MainPage.xaml
 ```
+
+> Version 0.1.0
