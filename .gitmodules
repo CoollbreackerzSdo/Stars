@@ -1,9 +1,12 @@
-[submodule "Stars.Server"]
-	path = Stars.Server
-	url = https://github.com/CoollbreackerzSdo/Stars.Client
 [submodule "Stars.Client"]
 	path = Stars.Client
-	url = https://github.com/CoollbreackerzSdo/Stars.Server
+	url = https://github.com/CoollbreackerzSdo/Stars.Client.git
+	branch = dev
+[submodule "Stars.Server"]
+	path = Stars.Server
+	url = https://github.com/CoollbreackerzSdo/Stars.Server.git
+	branch = dev
 [submodule "Stars.Shared"]
 	path = Stars.Shared
-	url = https://github.com/CoollbreackerzSdo/Stars.Shared
+	url = https://github.com/CoollbreackerzSdo/Stars.Shared.git
+	branch = dev
